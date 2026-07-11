@@ -66,7 +66,14 @@ direction changes.
 
 **Backend** (this repo): Java 21, Spring Boot 3.5, Spring Data JPA, Spring
 Security (JWT via jjwt), Postgres 16 (via `docker-compose.yml`, port
-55432), Lombok, springdoc-openapi for Swagger docs.
+55432), Flyway for schema migrations, Lombok, springdoc-openapi for
+Swagger docs.
+
+Schema is owned entirely by Flyway (`src/main/resources/db/migration/`,
+`V<n>__description.sql`). `spring.jpa.hibernate.ddl-auto=validate` —
+Hibernate only checks entities match the schema at startup, it never
+issues DDL. Any entity change needs a matching new migration file added
+by hand; migrations already applied are never edited.
 
 **Mobile** (`spendwise-mobile`, not yet created): React Native + TypeScript.
 
@@ -89,6 +96,7 @@ fails fast if Postgres isn't reachable.
 | 2026-07-11 | Categories are user-owned and editable, seeded with sensible defaults on registration | Avoids an empty-state cold-start while still letting users tailor categories to their spending. |
 | 2026-07-11 | Reports are server-aggregated via one flexible summary endpoint, not raw transactions + client-side aggregation | Keeps report numbers consistent across app screens and avoids duplicating aggregation logic on the client. |
 | 2026-07-11 | Mobile client is React Native + TypeScript in a separate repo (`spendwise-mobile`) | Cross-platform from one codebase; separate repo keeps toolchains/CI independent from the Spring Boot backend. |
+| 2026-07-11 | Schema managed by Flyway migrations, not Hibernate auto-DDL (`ddl-auto` switched from `update` to `validate`) | Auto-DDL is convenient in early prototyping but silently drifts and isn't safe for a real deployment; explicit, versioned migrations are reviewable and reproducible across environments. |
 
 ## Out of scope (revisit later, not now)
 
