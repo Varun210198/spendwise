@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"/Users/varun/Documents/Codex/Finance Project/spendwise-api\" \u0026\u0026 docker compose ps 2\u003e\u00261 | head -20)",
+      "Bash(cd \"/Users/varun/Documents/Codex/Finance Project/spendwise-api\" \u0026\u0026 docker compose ps)",
+      "Bash"
+    ]
+  }
+}

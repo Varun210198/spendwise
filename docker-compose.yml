@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: spendwise-postgres
+    ports:
+      - "55432:5432"
+    environment:
+      POSTGRES_DB: spendwise
+      POSTGRES_USER: spendwise
+      POSTGRES_PASSWORD: spendwise
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spendwise -d spendwise"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
