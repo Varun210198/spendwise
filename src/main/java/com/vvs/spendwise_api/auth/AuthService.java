@@ -3,6 +3,9 @@ package com.vvs.spendwise_api.auth;
 import com.vvs.spendwise_api.auth.dto.AuthResponse;
 import com.vvs.spendwise_api.auth.dto.LoginRequest;
 import com.vvs.spendwise_api.auth.dto.RegisterRequest;
+import com.vvs.spendwise_api.category.Category;
+import com.vvs.spendwise_api.category.CategoryRepository;
+import com.vvs.spendwise_api.category.DefaultCategories;
 import com.vvs.spendwise_api.common.exception.EmailAlreadyExistsException;
 import com.vvs.spendwise_api.security.CustomUserDetailsService;
 import com.vvs.spendwise_api.security.JwtService;
@@ -15,11 +18,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -36,8 +42,16 @@ public class AuthService {
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
+        seedDefaultCategories(user);
 
         return new AuthResponse(jwtService.generateToken(CustomUserDetailsService.toUserDetails(user)));
+    }
+
+    private void seedDefaultCategories(User user) {
+        List<Category> categories = DefaultCategories.NAMES.stream()
+                .map(name -> Category.builder().user(user).name(name).build())
+                .toList();
+        categoryRepository.saveAll(categories);
     }
 
     public AuthResponse login(LoginRequest request) {

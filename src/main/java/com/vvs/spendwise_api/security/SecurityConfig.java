@@ -31,6 +31,10 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/v1/health", "/api/v1/auth/**").permitAll()
 						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+						// Spring Boot forwards error responses (validation failures, 404s, etc.)
+						// to /error internally; that forward re-enters the filter chain as an
+						// anonymous request, so it must be public or every error becomes a 403.
+						.requestMatchers("/error").permitAll()
 						.anyRequest().authenticated())
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
